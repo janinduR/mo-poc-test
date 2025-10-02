@@ -29,34 +29,22 @@ phases:
       - "export CHANGESET_NAME=changeset-$CODEBUILD_RESOLVED_SOURCE_VERSION"
       - "echo Change set name: $CHANGESET_NAME"
 
-      # Determine if stack exists
-      - |
-        if aws cloudformation describe-stacks --stack-name $STACK_NAME >/dev/null 2>&1; then
-          echo "Stack exists. Using UPDATE change set..."
-          CHANGESET_TYPE=UPDATE
-        else
-          echo "Stack does not exist. Using CREATE change set..."
-          CHANGESET_TYPE=CREATE
-        fi
-
-      # Create change set
+      # Create change set without using \ (no backslashes)
       - >
-        aws cloudformation create-change-set \
-        --stack-name $STACK_NAME \
-        --change-set-name $CHANGESET_NAME \
-        --template-body file://$PACKAGED_FILE \
-        --capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND \
-        --change-set-type $CHANGESET_TYPE
+        if aws cloudformation describe-stacks --stack-name $STACK_NAME >/dev/null 2>&1; then
+          echo "Stack exists. Creating UPDATE change set..."
+          aws cloudformation create-change-set --stack-name $STACK_NAME --change-set-name $CHANGESET_NAME --template-body file://$PACKAGED_FILE --capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND --change-set-type UPDATE
+        else
+          echo "Stack does not exist. Creating CREATE change set..."
+          aws cloudformation create-change-set --stack-name $STACK_NAME --change-set-name $CHANGESET_NAME --template-body file://$PACKAGED_FILE --capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND --change-set-type CREATE
+        fi
 
       - "echo Waiting for change set creation to complete..."
       - >
-        aws cloudformation wait change-set-create-complete \
-        --stack-name $STACK_NAME \
-        --change-set-name $CHANGESET_NAME || echo "No changes or error"
+        aws cloudformation wait change-set-create-complete --stack-name $STACK_NAME --change-set-name $CHANGESET_NAME || echo "No changes or error"
 
       - "echo Change set created: $CHANGESET_NAME"
 
 artifacts:
   files:
     - packaged.yaml
-
