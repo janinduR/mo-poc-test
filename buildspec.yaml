@@ -11,44 +11,41 @@ env:
 phases:
   install:
     commands:
-      - echo "Installing/upgrading AWS CLI..."
+      - echo "Installing AWS CLI..."
       - pip install --upgrade awscli
 
   build:
     commands:
-      - echo "Packaging main template with nested child..."
-      - aws cloudformation package \
-          --template-file $TEMPLATE_FILE \
-          --s3-bucket $S3_BUCKET \
-          --output-template-file $PACKAGED_FILE
-      - echo "Creating change set..."
+      - echo "Packaging nested templates..."
+      - aws cloudformation package --template-file $TEMPLATE_FILE --s3-bucket $S3_BUCKET --output-template-file $PACKAGED_FILE
+
+      - echo "Preparing change set..."
       - export CHANGESET_NAME="changeset-$CODEBUILD_RESOLVED_SOURCE_VERSION"
-      - echo "Change set name: $CHANGESET_NAME"
-      # Determine if stack exists
+
+      - echo "Checking if stack exists..."
+      - STACK_EXISTS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME >/dev/null 2>&1 && echo yes || echo no)
+
       - |
-        if aws cloudformation describe-stacks --stack-name $STACK_NAME >/dev/null 2>&1; then
+        if [ "$STACK_EXISTS" = "yes" ]; then
           echo "Stack exists. Using UPDATE change set..."
           CHANGESET_TYPE=UPDATE
         else
           echo "Stack does not exist. Using CREATE change set..."
           CHANGESET_TYPE=CREATE
         fi
-      - echo "Change set type: $CHANGESET_TYPE"
+
+      - echo "Creating change set: $CHANGESET_NAME"
       - aws cloudformation create-change-set \
           --stack-name $STACK_NAME \
           --change-set-name $CHANGESET_NAME \
           --template-body file://$PACKAGED_FILE \
           --capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND \
           --change-set-type $CHANGESET_TYPE
-      - echo "Waiting for change set creation to complete..."
-      - aws cloudformation wait change-set-create-complete \
-          --stack-name $STACK_NAME \
-          --change-set-name $CHANGESET_NAME || echo "No changes or error"
+
+      - echo "Waiting for change set to complete..."
+      - aws cloudformation wait change-set-create-complete --stack-name $STACK_NAME --change-set-name $CHANGESET_NAME || echo "No changes or error"
       - echo "Change set created: $CHANGESET_NAME"
-      # Optional: Uncomment next line to auto-execute
-      # - aws cloudformation execute-change-set --stack-name $STACK_NAME --change-set-name $CHANGESET_NAME
 
 artifacts:
   files:
     - packaged.yaml
-
