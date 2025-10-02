@@ -13,13 +13,12 @@ phases:
     commands:
       - echo "Installing AWS CLI..."
       - pip install --upgrade awscli
-
   build:
     commands:
       - echo "Packaging nested templates..."
       - aws cloudformation package --template-file $TEMPLATE_FILE --s3-bucket $S3_BUCKET --output-template-file $PACKAGED_FILE
       - echo "Creating change set..."
-      - CHANGESET_NAME="changeset-$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION)"
+      - export CHANGESET_NAME=changeset-$CODEBUILD_RESOLVED_SOURCE_VERSION
       - echo "Change set name: $CHANGESET_NAME"
       - aws cloudformation create-change-set --stack-name $STACK_NAME --change-set-name $CHANGESET_NAME --template-body file://$PACKAGED_FILE --capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND
       - echo "Waiting for change set creation to complete..."
@@ -29,6 +28,7 @@ phases:
 artifacts:
   files:
     - packaged.yaml
+
 
 
 
