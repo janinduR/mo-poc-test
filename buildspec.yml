@@ -24,8 +24,8 @@ phases:
       - echo "Waiting for change set creation to complete..."
       - aws cloudformation wait change-set-create-complete --stack-name $STACK_NAME --change-set-name $CHANGESET_NAME
       - echo "Change set created: $CHANGESET_NAME"
-      # Optional: Uncomment below line to auto-execute the change set
-      # - aws cloudformation execute-change-set --stack-name $STACK_NAME --change-set-name $CHANGESET_NAME
+      - # Optional: Uncomment the next line to auto-execute the change set
+      - # aws cloudformation execute-change-set --stack-name $STACK_NAME --change-set-name $CHANGESET_NAME
 
 artifacts:
   files:
