@@ -2,10 +2,10 @@ version: 0.2
 
 env:
   variables:
+    STACK_NAME: "my-poc-stack"
     TEMPLATE_FILE: "main.yaml"
     PACKAGED_FILE: "packaged.yaml"
     S3_BUCKET: "mo-poc-s3"
-    STACK_NAME: "my-poc-stack"
     REGION: "us-east-1"
 
 phases:
@@ -16,10 +16,8 @@ phases:
 
   build:
     commands:
-      - echo "Packaging nested templates..."
-      - aws cloudformation package --template-file $TEMPLATE_FILE --s3-bucket $S3_BUCKET --output-template-file $PACKAGED_FILE
-      - echo "Running deployment script..."
-      - chmod +x deploy.sh
+      - echo "Starting deployment via deploy.sh..."
+      - chmod +x ./deploy.sh
       - ./deploy.sh
 
 artifacts:
