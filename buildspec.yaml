@@ -11,28 +11,28 @@ env:
 phases:
   install:
     commands:
-      - echo "Installing AWS CLI..."
+      - echo Installing AWS CLI...
       - pip install --upgrade awscli
 
   build:
     commands:
-      - echo "Packaging nested templates..."
+      - echo Packaging nested templates...
       - aws cloudformation package --template-file $TEMPLATE_FILE --s3-bucket $S3_BUCKET --output-template-file $PACKAGED_FILE
 
-      - echo "Preparing change set name..."
+      - echo Preparing change set name...
       - export CHANGESET_NAME="changeset-$CODEBUILD_RESOLVED_SOURCE_VERSION"
 
-      - echo "Checking if stack exists and determining change set type..."
+      - echo Checking if stack exists and determining change set type...
       - bash -c 'if aws cloudformation describe-stacks --stack-name $STACK_NAME >/dev/null 2>&1; then CHANGESET_TYPE=UPDATE; else CHANGESET_TYPE=CREATE; fi'
-      - bash -c 'echo "Change set type: $CHANGESET_TYPE"'
+      - bash -c 'echo Change set type: $CHANGESET_TYPE'
 
-      - echo "Creating change set..."
+      - echo Creating change set...
       - bash -c "aws cloudformation create-change-set --stack-name $STACK_NAME --change-set-name $CHANGESET_NAME --template-body file://$PACKAGED_FILE --capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND --change-set-type $CHANGESET_TYPE"
 
-      - echo "Waiting for change set creation to complete..."
-      - bash -c 'aws cloudformation wait change-set-create-complete --stack-name $STACK_NAME --change-set-name $CHANGESET_NAME || echo "No changes or error"'
+      - echo Waiting for change set creation to complete...
+      - bash -c 'aws cloudformation wait change-set-create-complete --stack-name $STACK_NAME --change-set-name $CHANGESET_NAME || echo No changes or error'
 
-      - echo "Change set completed: $CHANGESET_NAME"
+      - echo Change set completed: $CHANGESET_NAME
 
 artifacts:
   files:
