@@ -31,12 +31,7 @@ phases:
       - echo "Change set type: $CHANGESET_TYPE"
 
       - echo "Creating change set..."
-      - aws cloudformation create-change-set \
-          --stack-name $STACK_NAME \
-          --change-set-name $CHANGESET_NAME \
-          --template-body file://$PACKAGED_FILE \
-          --capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND \
-          --change-set-type $CHANGESET_TYPE
+      - bash -c "aws cloudformation create-change-set --stack-name $STACK_NAME --change-set-name $CHANGESET_NAME --template-body file://$PACKAGED_FILE --capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND --change-set-type $CHANGESET_TYPE"
 
       - echo "Waiting for change set to complete..."
       - aws cloudformation wait change-set-create-complete --stack-name $STACK_NAME --change-set-name $CHANGESET_NAME || echo "No changes or error"
