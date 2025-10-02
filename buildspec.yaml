@@ -24,17 +24,13 @@ phases:
 
       - echo "Checking if stack exists..."
       - STACK_EXISTS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME >/dev/null 2>&1 && echo yes || echo no)
+      - echo "Stack exists? $STACK_EXISTS"
 
-      - |
-        if [ "$STACK_EXISTS" = "yes" ]; then
-          echo "Stack exists. Using UPDATE change set..."
-          CHANGESET_TYPE=UPDATE
-        else
-          echo "Stack does not exist. Using CREATE change set..."
-          CHANGESET_TYPE=CREATE
-        fi
+      - echo "Determining change set type..."
+      - '[ "$STACK_EXISTS" = "yes" ] && CHANGESET_TYPE=UPDATE || CHANGESET_TYPE=CREATE'
+      - echo "Change set type: $CHANGESET_TYPE"
 
-      - echo "Creating change set: $CHANGESET_NAME"
+      - echo "Creating change set..."
       - aws cloudformation create-change-set \
           --stack-name $STACK_NAME \
           --change-set-name $CHANGESET_NAME \
@@ -44,6 +40,7 @@ phases:
 
       - echo "Waiting for change set to complete..."
       - aws cloudformation wait change-set-create-complete --stack-name $STACK_NAME --change-set-name $CHANGESET_NAME || echo "No changes or error"
+
       - echo "Change set created: $CHANGESET_NAME"
 
 artifacts:
