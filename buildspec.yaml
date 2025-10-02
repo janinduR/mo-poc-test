@@ -2,22 +2,19 @@ version: 0.2
 
 env:
   variables:
-    STACK_NAME: "my-poc-stack"
-    TEMPLATE_FILE: "main.yaml"
-    PACKAGED_FILE: "packaged.yaml"
-    S3_BUCKET: "mo-poc-s3"
     REGION: "us-east-1"
+    S3_BUCKET: "mo-poc-s3"
+    STACK_NAME: "my-poc-stack"
 
 phases:
   install:
     commands:
       - echo "Installing AWS CLI..."
       - pip install --upgrade awscli
-
   build:
     commands:
-      - echo "Starting deployment via deploy.sh..."
-      - chmod +x ./deploy.sh
+      - echo "Running deployment script..."
+      - chmod +x deploy.sh
       - ./deploy.sh
 
 artifacts:

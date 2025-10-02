@@ -11,8 +11,8 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Join ['', [ !Ref BucketNamePrefix, '-', !Ref "AWS::StackName", '-', !Ref "AWS::Region" ]]
-      
+
 Outputs:
-  BucketNameOutput:
+  BucketName:
     Description: Name of the created S3 bucket
     Value: !Ref POCBucket
