@@ -7,7 +7,6 @@ env:
     S3_BUCKET: mo-poc-s3
     STACK_NAME: my-poc-stack
     REGION: us-east-1
-    CHANGESET_NAME: changeset-${CODEBUILD_RESOLVED_SOURCE_VERSION}
 
 phases:
   install:
@@ -19,15 +18,19 @@ phases:
     commands:
       - echo "Packaging nested templates..."
       - aws cloudformation package --template-file $TEMPLATE_FILE --s3-bucket $S3_BUCKET --output-template-file $PACKAGED_FILE
-      - echo "Creating change set $CHANGESET_NAME..."
+      - echo "Creating change set..."
+      - CHANGESET_NAME="changeset-$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION)"
+      - echo "Change set name: $CHANGESET_NAME"
       - aws cloudformation create-change-set --stack-name $STACK_NAME --change-set-name $CHANGESET_NAME --template-body file://$PACKAGED_FILE --capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND
       - echo "Waiting for change set creation to complete..."
-      - aws cloudformation wait change-set-create-complete --stack-name $STACK_NAME --change-set-name $CHANGESET_NAME
+      - aws cloudformation wait change-set-create-complete --stack-name $STACK_NAME --change-set-name $CHANGESET_NAME || echo "No changes or error"
       - echo "Change set created: $CHANGESET_NAME"
+      # - aws cloudformation execute-change-set --stack-name $STACK_NAME --change-set-name $CHANGESET_NAME
 
 artifacts:
   files:
     - packaged.yaml
+
 
 
 
