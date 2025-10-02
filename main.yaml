@@ -4,12 +4,12 @@ Description: Parent stack that launches the child nested stack (POC).
 Parameters:
   ChildTemplateS3Url:
     Type: String
-    Description: S3 URL (or HTTPS URL) of the child template.
+    Description: S3 URL (HTTPS) of the child template.
 
   BucketPrefix:
     Type: String
     Default: poc
-    Description: Prefix to use for child S3 bucket (lowercase)
+    Description: Prefix to use for child S3 bucket (must be lowercase)
 
 Resources:
   ChildStack:
@@ -20,6 +20,6 @@ Resources:
         BucketNamePrefix: !Ref BucketPrefix
 
 Outputs:
-  ChildStackOutputBucketName:   # Fixed: no underscores
+  ChildBucketName:
     Description: Child stack S3 bucket name (propagated)
-    Value: !GetAtt ChildStack.Outputs.BucketName
+    Value: !GetAtt ChildStack.Outputs.BucketNameOutput
