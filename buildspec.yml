@@ -21,10 +21,7 @@ phases:
       - echo "Creating change set $CHANGESET_NAME"
       - aws cloudformation create-change-set --stack-name $STACK_NAME --change-set-name $CHANGESET_NAME --template-body file://$PACKAGED_FILE --capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND
       - echo "Waiting for change set creation to complete..."
-      - >
-        aws cloudformation wait change-set-create-complete
-        --stack-name $STACK_NAME
-        --change-set-name $CHANGESET_NAME
+      - aws cloudformation wait change-set-create-complete --stack-name $STACK_NAME --change-set-name $CHANGESET_NAME
       - echo "Change set created: $CHANGESET_NAME"
       # Optional: auto-execute
       # - aws cloudformation execute-change-set --stack-name $STACK_NAME --change-set-name $CHANGESET_NAME
