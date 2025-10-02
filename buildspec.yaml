@@ -19,7 +19,7 @@ phases:
       - echo "Packaging nested templates..."
       - aws cloudformation package --template-file $TEMPLATE_FILE --s3-bucket $S3_BUCKET --output-template-file $PACKAGED_FILE
 
-      - echo "Preparing change set..."
+      - echo "Preparing change set name..."
       - export CHANGESET_NAME="changeset-$CODEBUILD_RESOLVED_SOURCE_VERSION"
 
       - echo "Checking if stack exists and determining change set type..."
@@ -32,7 +32,7 @@ phases:
       - echo "Waiting for change set creation to complete..."
       - bash -c 'aws cloudformation wait change-set-create-complete --stack-name $STACK_NAME --change-set-name $CHANGESET_NAME || echo "No changes or error"'
 
-      - echo "Change set created: $CHANGESET_NAME"
+      - echo "Change set completed: $CHANGESET_NAME"
 
 artifacts:
   files:
