@@ -15,7 +15,7 @@ Resources:
   ChildStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Ref ChildTemplateS3Url
+      TemplateURL: child-template.yaml
       Parameters:
         BucketNamePrefix: !Ref BucketPrefix
 
