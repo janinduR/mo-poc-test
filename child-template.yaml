@@ -5,7 +5,7 @@ Resources:
   POCBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: mo-poc-stack-us-east-1  # <-- hardcoded, all lowercase
+      BucketName: mo-poc-s3-us-east-1  # <-- hardcoded, all lowercase
 
 Outputs:
   BucketName:
