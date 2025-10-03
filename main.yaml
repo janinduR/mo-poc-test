@@ -2,18 +2,15 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: Parent stack that launches the child nested stack (POC).
 
 Parameters:
-  BucketPrefix:
+  ChildTemplateS3Url:
     Type: String
-    Default: poc
-    Description: Prefix to use for child S3 bucket (lowercase)
+    Description: S3 URL (or HTTPS URL) of the child template.
 
 Resources:
   ChildStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: child-template.yaml  # aws cloudformation package will replace this with S3 URL
-      Parameters:
-        BucketNamePrefix: !Ref BucketPrefix
+      TemplateURL: !Ref ChildTemplateS3Url
 
 Outputs:
   ChildStackOutputBucketName:
