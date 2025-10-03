@@ -20,7 +20,7 @@ aws cloudformation create-change-set \
   --stack-name $STACK_NAME \
   --template-body file://packaged.yaml \
   --change-set-name $CHANGE_SET_NAME \
-  --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
+  --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND \
   --parameters ParameterKey=ChildTemplateS3Url,ParameterValue="https://$S3_BUCKET.s3.amazonaws.com/child-template.yaml" \
   --region $REGION
 
