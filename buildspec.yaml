@@ -11,21 +11,21 @@ env:
 phases:
   install:
     commands:
-      - echo "Installing AWS CLI..."
+      - echo Installing AWS CLI...
       - pip install --upgrade awscli
 
   pre_build:
     commands:
-      - echo "Ensuring environment variables..."
-      - echo "Stack Name: $STACK_NAME"
-      - echo "Template file: $TEMPLATE_FILE"
-      - echo "Child template file: $CHILD_TEMPLATE_FILE"
+      - echo Validating environment...
+      - echo Stack Name: $STACK_NAME
+      - echo Template file: $TEMPLATE_FILE
+      - echo Child template file: $CHILD_TEMPLATE_FILE
 
   build:
     commands:
-      - echo "Starting deployment script..."
-      - chmod +x ./deploy.sh
-      - ./deploy.sh
+      - echo Starting deployment script...
+      - "chmod +x ./deploy.sh"
+      - "./deploy.sh"
 
 artifacts:
   files:
