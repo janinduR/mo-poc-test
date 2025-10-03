@@ -1,18 +1,13 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Child stack - creates an S3 bucket (POC).
 
-Parameters:
-  BucketName:
-    Type: String
-    Description: Exact name for the S3 bucket (must be lowercase)
-
 Resources:
   POCBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Ref BucketName
+      BucketName: mo-poc-ms-wso2-s3-us-east-1  # hardcoded bucket name, must be lowercase
 
 Outputs:
-  POCBucketName:
+  BucketName:
     Description: Name of the created S3 bucket
     Value: !Ref POCBucket

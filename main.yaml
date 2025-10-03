@@ -2,19 +2,17 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: Parent stack that launches the child nested stack (POC).
 
 Parameters:
-  BucketName:
+  ChildTemplateS3Url:
     Type: String
-    Description: Exact name for the child S3 bucket (must be lowercase)
+    Description: S3 URL (or HTTPS URL) of the child template.
 
 Resources:
   ChildStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: "https://s3.amazonaws.com/mo-poc-s3/child-template.yaml"
-      Parameters:
-        BucketName: !Ref BucketName
+      TemplateURL: !Ref ChildTemplateS3Url
 
 Outputs:
-  ChildStackBucketName:
+  ChildStackOutput_BucketName:
     Description: Child stack S3 bucket name (propagated)
-    Value: !GetAtt ChildStack.Outputs.POCBucketName
+    Value: !GetAtt ChildStack.Outputs.BucketName
