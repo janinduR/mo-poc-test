@@ -1,11 +1,16 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Child stack - creates an S3 bucket (POC).
 
+Parameters:
+  BucketNamePrefix:
+    Type: String
+    Description: Prefix for the bucket name (must be lowercase)
+
 Resources:
   POCBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: mo-poc-ms-wso2-s3-us-east-1  # hardcoded bucket name, must be lowercase
+      BucketName: !Join ['', [ !Ref BucketNamePrefix, '-', !Ref "AWS::StackName", '-', !Ref "AWS::Region" ]]
 
 Outputs:
   BucketName:
