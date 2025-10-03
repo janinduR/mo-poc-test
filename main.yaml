@@ -4,7 +4,7 @@ Description: Parent stack that launches the child nested stack (POC).
 Parameters:
   ChildTemplateS3Url:
     Type: String
-    Description: S3 URL (or HTTPS URL) of the child template.
+    Description: S3 URL (HTTPS or S3) of the child template
 
 Resources:
   ChildStack:
