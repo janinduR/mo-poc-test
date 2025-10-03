@@ -1,22 +1,31 @@
 version: 0.2
 
-env:
-  variables:
-    REGION: "us-east-1"
-    S3_BUCKET: "mo-poc-s3"
-    STACK_NAME: "my-poc-stack"
-
 phases:
   install:
+    runtime-versions:
+      python: 3.9
     commands:
-      - echo "Installing AWS CLI..."
+      - echo "📦 Installing AWS CLI..."
       - pip install --upgrade awscli
+
+  pre_build:
+    commands:
+      - echo "🔧 Pre-build phase started..."
+      - aws --version
+      - chmod +x deploy.sh
+
   build:
     commands:
-      - echo "Running deployment script..."
-      - chmod +x deploy.sh
+      - echo "🚀 Running deployment script to create change set..."
       - ./deploy.sh
+
+  post_build:
+    commands:
+      - echo "✅ Build phase complete. Change set created successfully."
+      - echo "👉 Review and execute the change set manually from the CloudFormation console."
 
 artifacts:
   files:
     - packaged.yaml
+    - main.yaml
+    - child-template.yaml
