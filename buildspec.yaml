@@ -4,28 +4,25 @@ env:
   variables:
     STACK_NAME: "my-poc-stack"
     TEMPLATE_FILE: "main.yaml"
-    CHILD_TEMPLATE_FILE: "child-template.yaml"
     PACKAGED_FILE: "packaged.yaml"
-    S3_BUCKET: "mo-poc-s3"
+    REGION: "us-east-1"
 
 phases:
   install:
     commands:
-      - echo Installing AWS CLI...
+      - echo "Installing AWS CLI..."
       - pip install --upgrade awscli
-
-  pre_build:
-    commands:
-      - echo Validating environment...
-      - echo Stack Name: $STACK_NAME
-      - echo Template file: $TEMPLATE_FILE
-      - echo Child template file: $CHILD_TEMPLATE_FILE
 
   build:
     commands:
-      - echo Starting deployment script...
-      - "chmod +x ./deploy.sh"
-      - "./deploy.sh"
+      - echo "Packaging CloudFormation template..."
+      - aws cloudformation package \
+          --template-file $TEMPLATE_FILE \
+          --s3-bucket mo-poc-s3 \
+          --output-template-file $PACKAGED_FILE
+      - echo "Deploy script execution..."
+      - chmod +x ./deploy.sh
+      - ./deploy.sh
 
 artifacts:
   files:
