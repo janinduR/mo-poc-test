@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-STACK_NAME="my-poc-stack"
-S3_BUCKET="your-cf-bucket"  # CodeBuild artifact bucket
+STACK_NAME="mo-poc-stack"
+S3_BUCKET="mo-poc-s3"  # CodeBuild artifact bucket
 REGION="us-east-1"
 CHANGE_SET_NAME="changeset-$(date +%s)"
 
