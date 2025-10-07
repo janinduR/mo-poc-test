@@ -1,53 +1,50 @@
-AWSTemplateFormatVersion: "2010-09-09"
-Description: Main template for VPC, IAM, Security Group, and EC2
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Main stack to create IAM, VPC, Security Group, and EC2 instance.
 
 Parameters:
   Environment:
     Type: String
     Default: dev
-  VpcTemplate:
+  SSHKeyName:
     Type: String
-    Default: vpc.yaml
-  IAMTemplate:
-    Type: String
-    Default: iam.yaml
-  SecGrpTemplate:
-    Type: String
-    Default: secgrp.yaml
-  EC2Template:
-    Type: String
-    Default: ec2.yaml
+    Default: my-key
 
 Resources:
-  VPCStack:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: !Ref VpcTemplate
-      Parameters:
-        Environment: !Ref Environment
-
   IAMStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Ref IAMTemplate
+      TemplateURL: iam.yaml
+      Parameters:
+        Environment: !Ref Environment
+
+  VPCStack:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: IAMStack
+    Properties:
+      TemplateURL: vpc.yaml
       Parameters:
         Environment: !Ref Environment
 
   SecGrpStack:
     Type: AWS::CloudFormation::Stack
+    DependsOn: VPCStack
     Properties:
-      TemplateURL: !Ref SecGrpTemplate
+      TemplateURL: secgrp.yaml
       Parameters:
         Environment: !Ref Environment
         VpcId: !GetAtt VPCStack.Outputs.VpcId
 
   EC2Stack:
     Type: AWS::CloudFormation::Stack
+    DependsOn:
+      - IAMStack
+      - VPCStack
+      - SecGrpStack
     Properties:
-      TemplateURL: !Ref EC2Template
+      TemplateURL: ec2.yaml
       Parameters:
         Environment: !Ref Environment
         VpcId: !GetAtt VPCStack.Outputs.VpcId
-        SubnetId: !GetAtt VPCStack.Outputs.PrivateSubnetId
         SecurityGroupId: !GetAtt SecGrpStack.Outputs.EC2SecurityGroupId
         IAMRoleName: !GetAtt IAMStack.Outputs.EC2RoleName
+        SSHKeyName: !Ref SSHKeyName

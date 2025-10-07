@@ -1,28 +1,26 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: EC2 instance in private subnet
+Description: EC2 Instance Stack
 
 Parameters:
   Environment:
     Type: String
   VpcId:
     Type: String
-  SubnetId:
-    Type: String
   SecurityGroupId:
     Type: String
   IAMRoleName:
     Type: String
+  SSHKeyName:
+    Type: String
 
 Resources:
-  MyEC2Instance:
+  EC2Instance:
     Type: AWS::EC2::Instance
     Properties:
+      ImageId: ami-0c94855ba95c71c99 # Example Amazon Linux 2 AMI
       InstanceType: t3.micro
-      ImageId: ami-0c94855ba95c71c99 # Example Amazon Linux 2
-      SubnetId: !Ref SubnetId
+      SubnetId: !Ref VpcId
       SecurityGroupIds:
         - !Ref SecurityGroupId
+      KeyName: !Ref SSHKeyName
       IamInstanceProfile: !Ref IAMRoleName
-      Tags:
-        - Key: Name
-          Value: !Sub "${Environment}-ec2"

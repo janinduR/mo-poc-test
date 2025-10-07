@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: IAM role for EC2
+Description: IAM Role for EC2
 
 Parameters:
   Environment:
@@ -9,6 +9,7 @@ Resources:
   EC2Role:
     Type: AWS::IAM::Role
     Properties:
+      RoleName: !Sub "${Environment}-EC2-Role"
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -17,8 +18,7 @@ Resources:
               Service: ec2.amazonaws.com
             Action: sts:AssumeRole
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
-      RoleName: !Sub "${Environment}-ec2-role"
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
 
 Outputs:
   EC2RoleName:

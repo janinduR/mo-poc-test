@@ -7,7 +7,7 @@ phases:
       - pip install --upgrade awscli
   build:
     commands:
-      - echo "Packaging CloudFormation templates..."
+      - echo "Running deployment script..."
       - chmod +x deploy.sh
       - ./deploy.sh
 
