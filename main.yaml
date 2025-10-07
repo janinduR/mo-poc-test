@@ -1,18 +1,53 @@
-AWSTemplateFormatVersion: '2010-09-09'
-Description: Parent stack that launches the child nested stack (POC).
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Main template for VPC, IAM, Security Group, and EC2
 
 Parameters:
-  ChildTemplateS3Url:
+  Environment:
     Type: String
-    Description: S3 URL (HTTPS) of the child template
+    Default: dev
+  VpcTemplate:
+    Type: String
+    Default: vpc.yaml
+  IAMTemplate:
+    Type: String
+    Default: iam.yaml
+  SecGrpTemplate:
+    Type: String
+    Default: secgrp.yaml
+  EC2Template:
+    Type: String
+    Default: ec2.yaml
 
 Resources:
-  ChildStack:
+  VPCStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Ref ChildTemplateS3Url
+      TemplateURL: !Ref VpcTemplate
+      Parameters:
+        Environment: !Ref Environment
 
-Outputs:
-  ChildStackOutputBucketName:  # ✅ Alphanumeric only
-    Description: Child stack S3 bucket name (propagated)
-    Value: !GetAtt ChildStack.Outputs.BucketName
+  IAMStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Ref IAMTemplate
+      Parameters:
+        Environment: !Ref Environment
+
+  SecGrpStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Ref SecGrpTemplate
+      Parameters:
+        Environment: !Ref Environment
+        VpcId: !GetAtt VPCStack.Outputs.VpcId
+
+  EC2Stack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Ref EC2Template
+      Parameters:
+        Environment: !Ref Environment
+        VpcId: !GetAtt VPCStack.Outputs.VpcId
+        SubnetId: !GetAtt VPCStack.Outputs.PrivateSubnetId
+        SecurityGroupId: !GetAtt SecGrpStack.Outputs.EC2SecurityGroupId
+        IAMRoleName: !GetAtt IAMStack.Outputs.EC2RoleName

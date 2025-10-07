@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Security Group for EC2
+
+Parameters:
+  Environment:
+    Type: String
+  VpcId:
+    Type: String
+
+Resources:
+  EC2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: !Sub "EC2 SG for ${Environment}"
+      VpcId: !Ref VpcId
+      SecurityGroupIngress: []  # No inbound
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+
+Outputs:
+  EC2SecurityGroupId:
+    Value: !Ref EC2SecurityGroup
