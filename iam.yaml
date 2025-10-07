@@ -9,7 +9,7 @@ Resources:
   EC2Role:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub "${Environment}-EC2-Role"
+      RoleName: !Sub "${Environment}-EC2Role"
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:

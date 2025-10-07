@@ -1,15 +1,13 @@
-AWSTemplateFormatVersion: '2010-09-09'
-Description: Main stack to create IAM, VPC, Security Group, and EC2 instance.
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Main CF template for VPC, IAM, SecurityGroup, and EC2
 
 Parameters:
   Environment:
     Type: String
-    Default: dev
-  SSHKeyName:
-    Type: String
-    Default: my-key
+    Default: "dev"
 
 Resources:
+  # IAM Role Stack
   IAMStack:
     Type: AWS::CloudFormation::Stack
     Properties:
@@ -17,29 +15,26 @@ Resources:
       Parameters:
         Environment: !Ref Environment
 
+  # VPC Stack
   VPCStack:
     Type: AWS::CloudFormation::Stack
-    DependsOn: IAMStack
     Properties:
       TemplateURL: vpc.yaml
       Parameters:
         Environment: !Ref Environment
 
+  # Security Group Stack
   SecGrpStack:
     Type: AWS::CloudFormation::Stack
-    DependsOn: VPCStack
     Properties:
       TemplateURL: secgrp.yaml
       Parameters:
         Environment: !Ref Environment
         VpcId: !GetAtt VPCStack.Outputs.VpcId
 
+  # EC2 Instance Stack
   EC2Stack:
     Type: AWS::CloudFormation::Stack
-    DependsOn:
-      - IAMStack
-      - VPCStack
-      - SecGrpStack
     Properties:
       TemplateURL: ec2.yaml
       Parameters:
@@ -47,4 +42,3 @@ Resources:
         VpcId: !GetAtt VPCStack.Outputs.VpcId
         SecurityGroupId: !GetAtt SecGrpStack.Outputs.EC2SecurityGroupId
         IAMRoleName: !GetAtt IAMStack.Outputs.EC2RoleName
-        SSHKeyName: !Ref SSHKeyName

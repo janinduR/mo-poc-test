@@ -6,10 +6,10 @@ Parameters:
     Type: String
 
 Resources:
-  VPC:
+  MyVPC:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: 10.0.0.0/16
+      CidrBlock: "10.0.0.0/16"
       EnableDnsSupport: true
       EnableDnsHostnames: true
       Tags:
@@ -19,8 +19,8 @@ Resources:
   PrivateSubnet:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref VPC
-      CidrBlock: 10.0.1.0/24
+      VpcId: !Ref MyVPC
+      CidrBlock: "10.0.1.0/24"
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
@@ -28,6 +28,6 @@ Resources:
 
 Outputs:
   VpcId:
-    Value: !Ref VPC
+    Value: !Ref MyVPC
   PrivateSubnetId:
     Value: !Ref PrivateSubnet

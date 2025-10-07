@@ -7,7 +7,7 @@ phases:
       - pip install --upgrade awscli
   build:
     commands:
-      - echo "Running deployment script..."
+      - echo "Running deploy.sh..."
       - chmod +x deploy.sh
       - ./deploy.sh
 
