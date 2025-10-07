@@ -4,6 +4,7 @@ set -e
 STACK_NAME="my-poc-stack"
 REGION="us-east-1"
 CHANGE_SET_NAME="changeset-$(date +%s)"
+S3_BUCKET="mo-poc-s3"  # <-- Add your bucket name here
 
 echo "📦 Packaging main template..."
 aws cloudformation package \
