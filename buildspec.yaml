@@ -9,27 +9,33 @@ env:
 phases:
   install:
     commands:
+      - echo "📦 Installing AWS CLI..."
       - pip install --upgrade awscli
+
+  pre_build:
+    commands:
+      - echo "🔍 DEBUG: Checking environment variables..."
+      - echo "STACK_NAME = $STACK_NAME"
+      - echo "S3_BUCKET  = $S3_BUCKET"
+      - echo "REGION     = $REGION"
+      - echo "📁 Current working directory:"
+      - pwd
+      - echo "📂 Listing all files:"
+      - ls -l
+
   build:
     commands:
-      - echo "📦 Packaging templates..."
+      - echo "📦 Packaging CloudFormation templates..."
       - aws cloudformation package \
           --template-file main.yaml \
           --s3-bucket $S3_BUCKET \
-          --output-template-file packaged.yaml
-
-      - echo "🛠️ Creating change set..."
-      - CHANGE_SET_NAME="changeset-$(date +%s)"
-      - aws cloudformation create-change-set \
-          --stack-name $STACK_NAME \
-          --template-body file://packaged.yaml \
-          --change-set-name $CHANGE_SET_NAME \
-          --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND \
+          --output-template-file packaged.yaml \
           --region $REGION
 
-      - echo "⏳ Waiting for change set creation..."
-      - aws cloudformation wait change-set-create-complete \
-          --stack-name $STACK_NAME \
-          --change-set-name $CHANGE_SET_NAME
+      - echo "🚀 Running deploy.sh..."
+      - chmod +x deploy.sh
+      - ./deploy.sh
 
-      - echo "✅ Change set ready. Review and execute in AWS Console."
+artifacts:
+  files:
+    - packaged.yaml
