@@ -14,25 +14,15 @@ phases:
 
   pre_build:
     commands:
-      - echo "🔍 DEBUG: Checking environment variables..."
+      - echo "🔍 Verifying environment..."
       - echo "STACK_NAME = $STACK_NAME"
       - echo "S3_BUCKET  = $S3_BUCKET"
       - echo "REGION     = $REGION"
-      - echo "📁 Current working directory:"
-      - pwd
-      - echo "📂 Listing all files:"
       - ls -l
 
   build:
     commands:
-      - echo "📦 Packaging CloudFormation templates..."
-      - aws cloudformation package \
-          --template-file main.yaml \
-          --s3-bucket $S3_BUCKET \
-          --output-template-file packaged.yaml \
-          --region $REGION
-
-      - echo "🚀 Running deploy.sh..."
+      - echo "🚀 Running deployment script..."
       - chmod +x deploy.sh
       - ./deploy.sh
 

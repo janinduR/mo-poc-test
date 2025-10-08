@@ -1,28 +1,24 @@
 #!/bin/bash
 set -e
 
-STACK_NAME="mo-wso2-dev"
-S3_BUCKET="mo-poc-s3"
-REGION="us-east-1"
-CHANGE_SET_NAME="changeset-$(date +%s)"
-
-echo "📦 Packaging templates..."
+echo "📦 Packaging CloudFormation templates..."
 aws cloudformation package \
   --template-file main.yaml \
   --s3-bucket $S3_BUCKET \
-  --output-template-file packaged.yaml
+  --output-template-file packaged.yaml \
+  --region $REGION
 
-echo "🛠️ Creating change set..."
-aws cloudformation create-change-set \
+echo "🚀 Creating or updating CloudFormation stack: $STACK_NAME"
+aws cloudformation deploy \
+  --template-file packaged.yaml \
   --stack-name $STACK_NAME \
-  --template-body file://packaged.yaml \
-  --change-set-name $CHANGE_SET_NAME \
   --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND \
   --region $REGION
 
-echo "⏳ Waiting for change set..."
-aws cloudformation wait change-set-create-complete \
-  --stack-name $STACK_NAME \
-  --change-set-name $CHANGE_SET_NAME
+echo "✅ Stack deployment complete!"
 
-echo "✅ Done. Change set created: $CHANGE_SET_NAME"
+# Optional: describe stack outputs
+aws cloudformation describe-stacks \
+  --stack-name $STACK_NAME \
+  --region $REGION \
+  --query "Stacks[0].Outputs"
