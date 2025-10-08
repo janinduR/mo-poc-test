@@ -1,15 +1,15 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: VPC Stack
+Description: Create VPC with private subnet
 
 Parameters:
   Environment:
     Type: String
 
 Resources:
-  MyVPC:
+  VPC:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: "10.0.0.0/16"
+      CidrBlock: 10.0.0.0/16
       EnableDnsSupport: true
       EnableDnsHostnames: true
       Tags:
@@ -19,15 +19,16 @@ Resources:
   PrivateSubnet:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref MyVPC
-      CidrBlock: "10.0.1.0/24"
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.1.0/24
       MapPublicIpOnLaunch: false
+      AvailabilityZone: !Select [0, !GetAZs '']
       Tags:
         - Key: Name
           Value: !Sub "${Environment}-private-subnet"
 
 Outputs:
   VpcId:
-    Value: !Ref MyVPC
+    Value: !Ref VPC
   PrivateSubnetId:
     Value: !Ref PrivateSubnet

@@ -1,26 +1,32 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: EC2 instance inside private subnet
+Description: EC2 instance in private subnet
 
 Parameters:
   Environment:
     Type: String
   VpcId:
     Type: String
+  SubnetId:
+    Type: String
   SecurityGroupId:
     Type: String
-  IAMRoleName:
+  InstanceRoleName:
     Type: String
 
 Resources:
-  MyEC2Instance:
+  EC2Instance:
     Type: AWS::EC2::Instance
     Properties:
+      ImageId: ami-0aa7d40eeae50c9a9   # Ubuntu 22.04 in us-east-1 (update if region changes)
       InstanceType: t3.micro
-      ImageId: ami-032562890a0e09052  # example, replace with your AMI
-      SubnetId: !Ref VpcId
+      SubnetId: !Ref SubnetId
+      IamInstanceProfile: !Ref InstanceRoleName
       SecurityGroupIds:
         - !Ref SecurityGroupId
-      IamInstanceProfile: !Ref IAMRoleName
       Tags:
         - Key: Name
-          Value: !Sub "${Environment}-EC2"
+          Value: !Sub "${Environment}-ec2-instance"
+
+Outputs:
+  InstanceId:
+    Value: !Ref EC2Instance

@@ -1,16 +1,35 @@
 version: 0.2
 
+env:
+  variables:
+    STACK_NAME: mo-wso2-dev
+    S3_BUCKET: mo-poc-s3
+    REGION: us-east-1
+
 phases:
   install:
     commands:
-      - echo "Installing AWS CLI..."
       - pip install --upgrade awscli
   build:
     commands:
-      - echo "Running deploy.sh..."
-      - chmod +x deploy.sh
-      - ./deploy.sh
+      - echo "📦 Packaging templates..."
+      - aws cloudformation package \
+          --template-file main.yaml \
+          --s3-bucket $S3_BUCKET \
+          --output-template-file packaged.yaml
 
-artifacts:
-  files:
-    - packaged.yaml
+      - echo "🛠️ Creating change set..."
+      - CHANGE_SET_NAME="changeset-$(date +%s)"
+      - aws cloudformation create-change-set \
+          --stack-name $STACK_NAME \
+          --template-body file://packaged.yaml \
+          --change-set-name $CHANGE_SET_NAME \
+          --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND \
+          --region $REGION
+
+      - echo "⏳ Waiting for change set creation..."
+      - aws cloudformation wait change-set-create-complete \
+          --stack-name $STACK_NAME \
+          --change-set-name $CHANGE_SET_NAME
+
+      - echo "✅ Change set ready. Review and execute in AWS Console."

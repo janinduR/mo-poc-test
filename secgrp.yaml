@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: Security Group for EC2
+Description: Security Group for EC2 (no inbound traffic)
 
 Parameters:
   Environment:
@@ -13,7 +13,7 @@ Resources:
     Properties:
       GroupDescription: !Sub "EC2 SG for ${Environment}"
       VpcId: !Ref VpcId
-      SecurityGroupIngress: []  # No inbound
+      SecurityGroupIngress: []  # No inbound traffic
       SecurityGroupEgress:
         - IpProtocol: -1
           CidrIp: 0.0.0.0/0

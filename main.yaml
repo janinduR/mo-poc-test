@@ -1,21 +1,12 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: Main CF template for VPC, IAM, SecurityGroup, and EC2
+Description: Main stack that deploys VPC, IAM, Security Group, and EC2
 
 Parameters:
   Environment:
     Type: String
-    Default: "dev"
+    Default: dev
 
 Resources:
-  # IAM Role Stack
-  IAMStack:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: iam.yaml
-      Parameters:
-        Environment: !Ref Environment
-
-  # VPC Stack
   VPCStack:
     Type: AWS::CloudFormation::Stack
     Properties:
@@ -23,8 +14,14 @@ Resources:
       Parameters:
         Environment: !Ref Environment
 
-  # Security Group Stack
-  SecGrpStack:
+  IAMStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: iam.yaml
+      Parameters:
+        Environment: !Ref Environment
+
+  SecurityGroupStack:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: secgrp.yaml
@@ -32,7 +29,6 @@ Resources:
         Environment: !Ref Environment
         VpcId: !GetAtt VPCStack.Outputs.VpcId
 
-  # EC2 Instance Stack
   EC2Stack:
     Type: AWS::CloudFormation::Stack
     Properties:
@@ -40,5 +36,6 @@ Resources:
       Parameters:
         Environment: !Ref Environment
         VpcId: !GetAtt VPCStack.Outputs.VpcId
-        SecurityGroupId: !GetAtt SecGrpStack.Outputs.EC2SecurityGroupId
-        IAMRoleName: !GetAtt IAMStack.Outputs.EC2RoleName
+        SubnetId: !GetAtt VPCStack.Outputs.PrivateSubnetId
+        SecurityGroupId: !GetAtt SecurityGroupStack.Outputs.EC2SecurityGroupId
+        InstanceRoleName: !GetAtt IAMStack.Outputs.InstanceRoleName
