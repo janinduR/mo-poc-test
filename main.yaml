@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: Main stack that deploys VPC, IAM, Security Group, and EC2
+Description: Main template to deploy VPC, IAM, Security Group, and EC2 using nested stacks.
 
 Parameters:
   Environment:
@@ -10,21 +10,21 @@ Resources:
   VPCStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: vpc.yaml
+      TemplateURL: file://vpc.yml
       Parameters:
         Environment: !Ref Environment
 
   IAMStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: iam.yaml
+      TemplateURL: file://iam.yaml
       Parameters:
         Environment: !Ref Environment
 
-  SecurityGroupStack:
+  SecGrpStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: secgrp.yaml
+      TemplateURL: file://secgrp.yaml
       Parameters:
         Environment: !Ref Environment
         VpcId: !GetAtt VPCStack.Outputs.VpcId
@@ -32,10 +32,18 @@ Resources:
   EC2Stack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: ec2.yaml
+      TemplateURL: file://ec2.yaml
       Parameters:
         Environment: !Ref Environment
         VpcId: !GetAtt VPCStack.Outputs.VpcId
-        SubnetId: !GetAtt VPCStack.Outputs.PrivateSubnetId
-        SecurityGroupId: !GetAtt SecurityGroupStack.Outputs.EC2SecurityGroupId
+        SecurityGroupId: !GetAtt SecGrpStack.Outputs.EC2SecurityGroupId
         InstanceRoleName: !GetAtt IAMStack.Outputs.InstanceRoleName
+
+Outputs:
+  VpcId:
+    Description: VPC ID from nested stack
+    Value: !GetAtt VPCStack.Outputs.VpcId
+
+  EC2InstanceId:
+    Description: EC2 instance ID from nested stack
+    Value: !GetAtt EC2Stack.Outputs.InstanceId
