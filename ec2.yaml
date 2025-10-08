@@ -4,9 +4,7 @@ Description: EC2 instance in private subnet
 Parameters:
   Environment:
     Type: String
-  VpcId:
-    Type: String
-  SubnetId:
+  SubnetId:               # Make sure SubnetId is passed from the main stack
     Type: String
   SecurityGroupId:
     Type: String
@@ -17,7 +15,7 @@ Resources:
   EC2Instance:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: ami-0aa7d40eeae50c9a9   # Ubuntu 22.04 in us-east-1 (update if region changes)
+      ImageId: ami-0aa7d40eeae50c9a9   # Hardcoded Ubuntu 22.04 in us-east-1
       InstanceType: t3.micro
       SubnetId: !Ref SubnetId
       IamInstanceProfile: !Ref InstanceRoleName

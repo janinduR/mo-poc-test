@@ -35,7 +35,7 @@ Resources:
       TemplateURL: ec2.yaml
       Parameters:
         Environment: !Ref Environment
-        VpcId: !GetAtt VPCStack.Outputs.VpcId
+        SubnetId: !GetAtt VPCStack.Outputs.PrivateSubnetId   # <-- updated
         SecurityGroupId: !GetAtt SecGrpStack.Outputs.EC2SecurityGroupId
         InstanceRoleName: !GetAtt IAMStack.Outputs.InstanceRoleName
 
